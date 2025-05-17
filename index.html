@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Known Upcoming Expenses</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      color: #2c3e50;
+    }
+    h2 {
+      border-left: 4px solid #3498db;
+      padding-left: 8px;
+    }
+    .instructions {
+      margin: 16px 0;
+    }
+    label {
+      display: block;
+      margin-bottom: 12px;
+      font-weight: bold;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 12px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background: #f0f0f0;
+    }
+    tfoot th, tfoot td {
+      font-size: 1.1em;
+      font-weight: bold;
+    }
+    input[type="number"],
+    input[type="text"] {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 4px;
+      border: 1px solid #bbb;
+      border-radius: 2px;
+    }
+    #addRow {
+      display: inline-block;
+      margin-bottom: 24px;
+      padding: 8px 12px;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    #addRow:hover {
+      background: #2980b9;
+    }
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 0.9em;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Known Upcoming Expenses</h2>
+
+  <p class="instructions">
+    <strong>How to use:</strong><br>
+    1. Enter your number of pay periods per year.<br>
+    2. For each non-monthly expense, type in the name and the total annual cost.<br>
+    3. Click “Add Expense” to create more rows as needed.<br>
+    4. Monthly = Annual ÷ Pay Periods. Totals update automatically.
+  </p>
+
+  <label>
+    Pay Periods Per Year:
+    <input type="number" id="periods" value="12" min="1" />
+  </label>
+
+  <button id="addRow">+ Add Expense</button>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Non-Monthly Expense</th>
+        <th>Annual Expense</th>
+        <th>Monthly Expense</th>
+      </tr>
+    </thead>
+    <tbody id="rows">
+      <tr>
+        <td><input type="text" placeholder="e.g. Christmas" /></td>
+        <td><input type="number" value="1000" min="0" /></td>
+        <td class="monthly"></td>
+      </tr>
+      <tr>
+        <td><input type="text" placeholder="e.g. Vacation" /></td>
+        <td><input type="number" value="1500" min="0" /></td>
+        <td class="monthly"></td>
+      </tr>
+      <tr>
+        <td><input type="text" placeholder="e.g. Property Tax" /></td>
+        <td><input type="number" value="1200" min="0" /></td>
+        <td class="monthly"></td>
+      </tr>
+      <tr>
+        <td><input type="text" placeholder="e.g. Health Deductible" /></td>
+        <td><input type="number" value="2500" min="0" /></td>
+        <td class="monthly"></td>
+      </tr>
+      <tr>
+        <td><input type="text" placeholder="e.g. Car Repairs/Tires" /></td>
+        <td><input type="number" value="750" min="0" /></td>
+        <td class="monthly"></td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <th>Total</th>
+        <th id="totalAnnual">0.00</th>
+        <th id="totalMonthly">0.00</th>
+      </tr>
+    </tfoot>
+  </table>
+
+  <footer>
+    © 2025 Dale Hopkinson. All Rights Reserved.
+  </footer>
+
+  <script>
+    const periodsInput = document.getElementById('periods');
+    const rowsBody     = document.getElementById('rows');
+    const totalA       = document.getElementById('totalAnnual');
+    const totalM       = document.getElementById('totalMonthly');
+    const addBtn       = document.getElementById('addRow');
+
+    function recalc() {
+      const periods = parseFloat(periodsInput.value) || 1;
+      let sumA = 0, sumM = 0;
+
+      rowsBody.querySelectorAll('tr').forEach(row => {
+        const annInput = row.querySelector('input[type="number"]');
+        const monthly  = (parseFloat(annInput.value) || 0) / periods;
+        row.querySelector('.monthly').textContent = monthly.toFixed(2);
+        sumA += parseFloat(annInput.value) || 0;
+        sumM += monthly;
+      });
+
+      totalA.textContent = sumA.toFixed(2);
+      totalM.textContent = sumM.toFixed(2);
+    }
+
+    // Attach recalc to existing inputs
+    function bindRowEvents(row) {
+      row.querySelector('input[type="number"]').addEventListener('input', recalc);
+      row.querySelector('input[type="text"]').addEventListener('input', () => {}); // placeholder if you want to react
+    }
+
+    // Add initial bindings
+    periodsInput.addEventListener('input', recalc);
+    rowsBody.querySelectorAll('tr').forEach(bindRowEvents);
+
+    // Add new row on button click
+    addBtn.addEventListener('click', () => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input type="text" placeholder="Expense Name" /></td>
+        <td><input type="number" value="0" min="0" /></td>
+        <td class="monthly">0.00</td>
+      `;
+      bindRowEvents(tr);
+      rowsBody.appendChild(tr);
+      recalc();
+    });
+
+    // initial calculation
+    recalc();
+  </script>
+
+</body>
+</html>
