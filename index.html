@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,82 +6,294 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Interactive Expense Calculator</title>
   <style>
-    table { width:100%; border-collapse: collapse; margin-bottom:1em; }
-    th, td { padding:8px; border:1px solid #ddd; text-align:left; }
-    input { width: 100%; padding:6px; box-sizing:border-box; }
-    button { padding:8px 16px; margin-top:8px; }
+    :root {
+      --primary-color: #3498db;
+      --secondary-color: #2980b9;
+      --accent-color: #e74c3c;
+      --light-bg: #f8f9fa;
+      --border-color: #ddd;
+      --text-color: #333;
+      --shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: var(--text-color);
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    
+    h1 {
+      color: var(--primary-color);
+      text-align: center;
+      margin-bottom: 0.5em;
+      font-size: 2.2em;
+    }
+    
+    p {
+      text-align: center;
+      margin-bottom: 1.5em;
+      color: #555;
+    }
+    
+    .container {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1em;
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    
+    thead {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    
+    th, td {
+      padding: 12px 15px;
+      border: 1px solid var(--border-color);
+      text-align: left;
+    }
+    
+    tbody tr:nth-child(even) {
+      background-color: var(--light-bg);
+    }
+    
+    tbody tr:hover {
+      background-color: rgba(52, 152, 219, 0.1);
+    }
+    
+    input {
+      width: 100%;
+      padding: 8px 10px;
+      box-sizing: border-box;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      font-size: 15px;
+      transition: border 0.3s;
+    }
+    
+    input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    }
+    
+    input[readonly] {
+      background-color: var(--light-bg);
+      color: #666;
+    }
+    
+    .btn-container {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+    }
+    
+    button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s;
+    }
+    
+    button:hover {
+      background-color: var(--secondary-color);
+    }
+    
+    #delete-row {
+      background-color: var(--accent-color);
+    }
+    
+    #delete-row:hover {
+      background-color: #c0392b;
+    }
+    
+    .totals-row {
+      font-weight: bold;
+      background-color: #eaf2f8 !important;
+    }
+    
+    .totals-row td {
+      border-top: 2px solid var(--primary-color);
+    }
+    
+    footer {
+      text-align: center;
+      margin-top: 30px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border-color);
+      color: #777;
+      font-size: 14px;
+    }
+    
+    .description {
+      width: 50%;
+    }
+    
+    .currency {
+      width: 25%;
+    }
+    
+    input.error {
+      border-color: var(--accent-color);
+      background-color: rgba(231, 76, 60, 0.1);
+    }
+    
+    .hidden {
+      display: none;
+    }
   </style>
 </head>
 <body>
-  <h1>Expense Calculator</h1>
-  <p>Enter your annual expenses; we’ll show you your monthly cost.</p>
-
-  <table id="expense-table">
-    <thead>
-      <tr>
-        <th>Description</th>
-        <th>Annual Expense</th>
-        <th>Monthly Expense</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- First row pre-populated -->
-      <tr>
-        <td><input type="text" name="desc" value="Sample Expense"></td>
-        <td><input type="number" name="annual" class="annual-input" value="1200"></td>
-        <td><input type="number" name="monthly" class="monthly-input" readonly></td>
-      </tr>
-      <!-- Additional blank rows -->
-      <tr>
-        <td><input type="text" name="desc" placeholder="Description…"></td>
-        <td><input type="number" name="annual" class="annual-input" value="0"></td>
-        <td><input type="number" name="monthly" class="monthly-input" readonly></td>
-      </tr>
-      <tr>
-        <td><input type="text" name="desc" placeholder="Description…"></td>
-        <td><input type="number" name="annual" class="annual-input" value="0"></td>
-        <td><input type="number" name="monthly" class="monthly-input" readonly></td>
-      </tr>
-      <!-- add more rows as needed -->
-    </tbody>
-  </table>
-
-  <button id="add-row">Add Row</button>
-
+  <h1>Known Upcoming Expense Calculator</h1>
+  <p>Enter your annual expenses to see your monthly breakdown</p>
+  
+  <div class="container">
+    <table id="expense-table">
+      <thead>
+        <tr>
+          <th class="description">Description</th>
+          <th class="currency">Annual Expense ($)</th>
+          <th class="currency">Monthly Expense ($)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- First row pre-populated -->
+        <tr>
+          <td><input type="text" name="desc" value="Rent/Mortgage"></td>
+          <td><input type="number" name="annual" class="annual-input" value="12000"></td>
+          <td><input type="number" name="monthly" class="monthly-input" readonly></td>
+        </tr>
+        <tr>
+          <td><input type="text" name="desc" value="Utilities"></td>
+          <td><input type="number" name="annual" class="annual-input" value="2400"></td>
+          <td><input type="number" name="monthly" class="monthly-input" readonly></td>
+        </tr>
+        <tr>
+          <td><input type="text" name="desc" value="Groceries"></td>
+          <td><input type="number" name="annual" class="annual-input" value="5200"></td>
+          <td><input type="number" name="monthly" class="monthly-input" readonly></td>
+        </tr>
+        <!-- Totals row -->
+        <tr class="totals-row">
+          <td>TOTALS</td>
+          <td id="annual-total">$0.00</td>
+          <td id="monthly-total">$0.00</td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <div class="btn-container">
+      <button id="add-row">Add Expense</button>
+      <button id="delete-row" class="hidden">Delete Last Row</button>
+    </div>
+  </div>
+  
+  <footer>
+    <p>&copy; 2025 Dale Hopkinson. All rights reserved.</p>
+  </footer>
+  
   <script>
     const PAY_PERIODS = 12;
-
-    function recalcRow(row) {
-      const annual = parseFloat(row.querySelector('.annual-input').value) || 0;
-      row.querySelector('.monthly-input').value = (annual / PAY_PERIODS).toFixed(2);
+    
+    function formatCurrency(value) {
+      return '$' + parseFloat(value).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     }
-
+    
+    function recalcRow(row) {
+      const annualInput = row.querySelector('.annual-input');
+      const annual = parseFloat(annualInput.value) || 0;
+      
+      // Validate input
+      if (annual < 0) {
+        annualInput.classList.add('error');
+        annualInput.value = 0;
+      } else {
+        annualInput.classList.remove('error');
+      }
+      
+      row.querySelector('.monthly-input').value = (annual / PAY_PERIODS).toFixed(2);
+      updateTotals();
+    }
+    
+    function updateTotals() {
+      let annualTotal = 0;
+      const rows = document.querySelectorAll('#expense-table tbody tr:not(.totals-row)');
+      
+      rows.forEach(row => {
+        const annual = parseFloat(row.querySelector('.annual-input').value) || 0;
+        annualTotal += annual;
+      });
+      
+      const monthlyTotal = annualTotal / PAY_PERIODS;
+      
+      document.getElementById('annual-total').textContent = formatCurrency(annualTotal);
+      document.getElementById('monthly-total').textContent = formatCurrency(monthlyTotal);
+      
+      // Show/hide delete button based on number of rows
+      const deleteBtn = document.getElementById('delete-row');
+      if (rows.length > 3) {
+        deleteBtn.classList.remove('hidden');
+      } else {
+        deleteBtn.classList.add('hidden');
+      }
+    }
+    
     function wireUp(row) {
-      row.querySelector('.annual-input')
-         .addEventListener('input', () => recalcRow(row));
-      // initialize on load
+      const annualInput = row.querySelector('.annual-input');
+      annualInput.addEventListener('input', () => recalcRow(row));
+      
+      // Initialize on load
       recalcRow(row);
     }
-
+    
     // Wire up existing rows
-    document.querySelectorAll('#expense-table tbody tr').forEach(wireUp);
-
+    document.querySelectorAll('#expense-table tbody tr:not(.totals-row)').forEach(wireUp);
+    
     // "Add Row" button
     document.getElementById('add-row').addEventListener('click', () => {
       const tbody = document.querySelector('#expense-table tbody');
+      const totalsRow = document.querySelector('.totals-row');
       const newRow = document.createElement('tr');
+      
       newRow.innerHTML = `
-        <td><input type="text" name="desc" placeholder="Description…"></td>
+        <td><input type="text" name="desc" placeholder="Description..."></td>
         <td><input type="number" name="annual" class="annual-input" value="0"></td>
         <td><input type="number" name="monthly" class="monthly-input" readonly></td>
       `;
-      tbody.appendChild(newRow);
+      
+      // Insert before totals row
+      tbody.insertBefore(newRow, totalsRow);
       wireUp(newRow);
     });
+    
+    // "Delete Row" button
+    document.getElementById('delete-row').addEventListener('click', () => {
+      const rows = document.querySelectorAll('#expense-table tbody tr:not(.totals-row)');
+      if (rows.length > 3) { // Keep at least 3 rows
+        rows[rows.length - 1].remove();
+        updateTotals();
+      }
+    });
+    
+    // Initial calculations
+    updateTotals();
   </script>
-
-  <footer>
-    <p>— Dale Hopkinson</p>
-  </footer>
 </body>
 </html>
